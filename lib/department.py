@@ -125,7 +125,7 @@ class Department:
             WHERE id = ?
         """
 
-        row = CURSOR.execute(sql, (id,)).fetchone()
+        row = CURSOR.execute(sql, (id,),).fetchone()
         return cls.instance_from_db(row) if row else None
 
     @classmethod
@@ -139,3 +139,16 @@ class Department:
 
         row = CURSOR.execute(sql, (name,)).fetchone()
         return cls.instance_from_db(row) if row else None
+
+    def employees(self):
+        """Return a list of employees associated with the current department"""
+        from employee import Employee
+        sql = """
+            SELECT *
+            FROM employees
+            WHERE department_id = ?
+        """
+
+        row = CURSOR.execute(sql, (self.id,),)
+        rows = CURSOR.fetchall()
+        return [Employee.instance_from_db(row) for row in rows]
